@@ -8,23 +8,15 @@ public class Main {
         ResultSet alleReizigers = null;
         try {
             db = DriverManager.getConnection("jdbc:postgresql://localhost/ovchip", "postgres", "Wachtw00rd");
-        }catch (SQLException e){
-            System.out.println("Error connecting to database");
-        }
 
-        try {
             Statement statement = db.createStatement();
             alleReizigers = statement.executeQuery("select * from reiziger");
-            statement.close();
-        }catch (SQLException e){
-            System.out.println("Error running query");
-        }
 
-        System.out.println("Alle Reizigers:");
-        assert alleReizigers != null;
-        try {
-            while (alleReizigers.next()){
-                if(alleReizigers.getString("tussenvoegsel") != null){
+            System.out.println("Alle Reizigers:");
+            assert alleReizigers != null;
+
+            while (alleReizigers.next()) {
+                if (alleReizigers.getString("tussenvoegsel") != null) {
                     System.out.println(
                             "    #" + alleReizigers.getString("reiziger_id") + ": "
                                     + alleReizigers.getString("voorletters") + " "
@@ -32,8 +24,7 @@ public class Main {
                                     + alleReizigers.getString("achternaam") + " ("
                                     + alleReizigers.getString("geboortedatum") + ")"
                     );
-                }
-                else{
+                } else {
                     System.out.println(
                             "    #" + alleReizigers.getString("reiziger_id") + ": "
                                     + alleReizigers.getString("voorletters") + " "
@@ -41,17 +32,15 @@ public class Main {
                                     + alleReizigers.getString("geboortedatum") + ")"
                     );
                 }
-        }
-        }catch (SQLException e){
-            System.out.println("Error processing results");
-        }
+            }
 
-        try {
+            alleReizigers.close();
+            statement.close();
             db.close();
         }
         catch (SQLException e){
-            System.out.println("Error closing connection");
+            System.out.println("An SQL Error Has Occurred");
+            System.out.println(e);
         }
-
     }
 }
