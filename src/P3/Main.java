@@ -97,7 +97,7 @@ public class Main {
         // Maak nieuw adres aan en persisteer in database, hiervoor moet ook een nieuwe reiziger gemaakt worden vanwege de 1=1 relatie
 
         Reiziger nieuweReiziger = new Reiziger(6, "B", null, "Geerts", LocalDate.parse("1999-01-04"));
-        Adres nieuwAdres = new Adres(6, "3827KX", "8A", "Leukestraat", "Utrecht", 6);
+        Adres nieuwAdres = new Adres(6, "3827KX", "8A", "Leukestraat", "Utrecht", nieuweReiziger);
         System.out.print("[Test] Eerst " + alleAdressen.size() + " adressen, na AdresDAO.save() ");
         rdao.save(nieuweReiziger);
         adao.save(nieuwAdres);
@@ -147,7 +147,7 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         ReizigerDAOPsql rdao = new ReizigerDAOPsql(getConnection());
         AdresDAOPsql adao = new AdresDAOPsql(getConnection());
-//      testReizigerDAO(rdao);
+        testReizigerDAO(rdao);
         testAdresDAO(adao, rdao);
         ArrayList<Reiziger> alleReizigers = rdao.findAll();
         for (Reiziger r : alleReizigers){

@@ -8,13 +8,13 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     private Connection conn;
     private AdresDAOPsql adao;
 
-    public ReizigerDAOPsql(Connection conn) {
+    public ReizigerDAOPsql(Connection conn) throws SQLException{
         this.conn = conn;
         adao = new AdresDAOPsql(conn);
     }
 
     @Override
-    public boolean save(Reiziger reiziger) {
+    public boolean save(Reiziger reiziger) throws SQLException {
         String saveQuery = "insert into reiziger (reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum) values (?, ?, ?, ?, ?)";
         try(PreparedStatement ps = conn.prepareStatement(saveQuery)) {
             ps.setInt(1, reiziger.getId());
@@ -33,7 +33,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     }
 
     @Override
-    public boolean update(Reiziger reiziger) {
+    public boolean update(Reiziger reiziger) throws SQLException {
         String updateQuery = "UPDATE reiziger SET voorletters = ?, tussenvoegsel = ?, achternaam = ?, geboortedatum = ? WHERE reiziger_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(updateQuery)){
             ps.setString(1, reiziger.getVoorletters());
@@ -53,7 +53,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     }
 
     @Override
-    public boolean delete(Reiziger reiziger) {
+    public boolean delete(Reiziger reiziger) throws SQLException {
         String deleteQuery = "DELETE FROM reiziger WHERE reiziger_id = ?";
         try(PreparedStatement ps = conn.prepareStatement(deleteQuery)) {
             ps.setInt(1, reiziger.getId());
@@ -72,7 +72,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     }
 
     @Override
-    public Reiziger findById(int id) {
+    public Reiziger findById(int id) throws SQLException {
         String findByIdQuery = "SELECT * FROM reiziger WHERE reiziger_id = ?";
         try(PreparedStatement ps = conn.prepareStatement(findByIdQuery)) {
             ps.setInt(1, id);
@@ -91,7 +91,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     }
 
     @Override
-    public Reiziger findByGbdatum(LocalDate geboortedatum) {
+    public Reiziger findByGbdatum(LocalDate geboortedatum) throws SQLException {
         String findByGbQuery = "SELECT * FROM reiziger WHERE geboortedatum = ?";
         try(PreparedStatement ps = conn.prepareStatement(findByGbQuery)) {
             ps.setDate(1, Date.valueOf(geboortedatum));
@@ -110,7 +110,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     }
 
     @Override
-    public ArrayList<Reiziger> findAll() {
+    public ArrayList<Reiziger> findAll() throws SQLException {
         String findAllQuery = "SELECT * FROM reiziger;";
         ArrayList<Reiziger> allReizigers = new ArrayList<>();
         try(PreparedStatement ps = conn.prepareStatement(findAllQuery)){

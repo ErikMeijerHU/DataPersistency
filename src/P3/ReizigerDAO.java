@@ -6,9 +6,9 @@ import java.util.ArrayList;
 
 public interface ReizigerDAO {
     public boolean save(Reiziger reiziger) throws SQLException;
-    public boolean update(Reiziger reiziger);
-    public boolean delete(Reiziger reiziger);
-    public Reiziger findById(int id);
-    public Reiziger findByGbdatum(LocalDate geboortedatum);
-    public ArrayList<Reiziger> findAll();
+    public boolean update(Reiziger reiziger) throws SQLException;
+    public boolean delete(Reiziger reiziger) throws SQLException;
+    public Reiziger findById(int id) throws SQLException;
+    public Reiziger findByGbdatum(LocalDate geboortedatum) throws SQLException;
+    public ArrayList<Reiziger> findAll() throws SQLException;
 }
