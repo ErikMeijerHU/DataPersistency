@@ -1,13 +1,25 @@
-package P4;
+package P4.Domein;
+
+import P4.Data.AdresDAOPsql;
+import P4.Data.OVChipkaartDAOPsql;
+import P4.Data.ReizigerDAO;
+import P4.Data.ReizigerDAOPsql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class Main {
+    private static DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+
     public static Connection getConnection(){
         try {
             Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost/ovchip", "postgres", "Wachtw00rd");
@@ -29,7 +41,7 @@ public class Main {
         }
     }
 
-    private static void testReizigerDAO(ReizigerDAO rdao) throws SQLException {
+    private static void testReizigerDAO(ReizigerDAO rdao) throws SQLException, ParseException {
         System.out.println("\n---------- Test ReizigerDAO -------------");
 
         // Haal alle reizigers op uit de database
@@ -41,8 +53,11 @@ public class Main {
         System.out.println();
 
         // Maak een nieuwe reiziger aan en persisteer deze in de database
-        String gbdatum = "1981-03-14";
-        Reiziger sietske = new Reiziger(77, "S", "", "Boers", LocalDate.parse(gbdatum));
+
+        String gbdatumstring = "1981-03-14";
+        Date gbdatum = format.parse(gbdatumstring);
+        Reiziger sietske = new Reiziger(77, "S", "", "Boers", gbdatum);
+
         System.out.print("[Test] Eerst " + reizigers.size() + " reizigers, na ReizigerDAO.save() ");
         rdao.save(sietske);
         reizigers = rdao.findAll();
@@ -58,7 +73,7 @@ public class Main {
         // Zoek reiziger met Geboortedatum
 
         System.out.println("[Test] Reiziger zoeken met geboortedatum 1981-03-14 zou S Boers moeten geven:");
-        System.out.println(rdao.findByGbdatum(LocalDate.parse("1981-03-14")));
+        System.out.println(rdao.findByGbdatum(format.parse("1981-03-14")));
         System.out.println("");
 
         // Update bestaande reiziger
@@ -82,7 +97,7 @@ public class Main {
         System.out.print(reizigers.size());
     }
 
-    private static void testAdresDAO(AdresDAOPsql adao, ReizigerDAO rdao) throws SQLException{
+    private static void testAdresDAO(AdresDAOPsql adao, ReizigerDAO rdao) throws SQLException, ParseException {
         System.out.println("\n---------- Test AdresDAO -------------");
 
         // Haal alle adressen uit de database
@@ -96,7 +111,7 @@ public class Main {
 
         // Maak nieuw adres aan en persisteer in database, hiervoor moet ook een nieuwe reiziger gemaakt worden vanwege de 1=1 relatie
 
-        Reiziger nieuweReiziger = new Reiziger(6, "B", null, "Geerts", LocalDate.parse("1999-01-04"));
+        Reiziger nieuweReiziger = new Reiziger(6, "B", null, "Geerts", format.parse("1999-01-04"));
         Adres nieuwAdres = new Adres(6, "3827KX", "8A", "Leukestraat", "Utrecht", nieuweReiziger);
         System.out.print("[Test] Eerst " + alleAdressen.size() + " adressen, na AdresDAO.save() ");
         rdao.save(nieuweReiziger);
@@ -144,17 +159,17 @@ public class Main {
         System.out.println();
     }
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, ParseException {
         ReizigerDAOPsql rdao = new ReizigerDAOPsql(getConnection());
         AdresDAOPsql adao = new AdresDAOPsql(getConnection());
         OVChipkaartDAOPsql ovdao = new OVChipkaartDAOPsql(getConnection());
 
-        testReizigerDAO(rdao);
-        testAdresDAO(adao, rdao);
-//        ArrayList<Reiziger> alleReizigers = rdao.findAll();
-//        for (Reiziger r : alleReizigers){
-//            System.out.println(r);
-//        }
+//        testReizigerDAO(rdao);
+//        testAdresDAO(adao, rdao);
+        ArrayList<Reiziger> alleReizigers = rdao.findAll();
+        for (Reiziger r : alleReizigers){
+            System.out.println(r);
+        }
     }
 }
 

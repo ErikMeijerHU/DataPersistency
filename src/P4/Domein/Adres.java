@@ -1,4 +1,6 @@
-package P4;
+package P4.Domein;
+
+import P4.Domein.Reiziger;
 
 public class Adres {
     private int id;

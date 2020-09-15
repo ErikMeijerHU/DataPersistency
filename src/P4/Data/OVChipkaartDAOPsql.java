@@ -1,15 +1,19 @@
-package P4;
+package P4.Data;
+
+import P4.Domein.Main;
+import P4.Domein.OVChipkaart;
+import P4.Domein.Reiziger;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 public class OVChipkaartDAOPsql implements OVChipkaartDAO{
     private Connection conn;
+    private ReizigerDAOPsql rdao;
 
-    public OVChipkaartDAOPsql(Connection conn) {
+    public OVChipkaartDAOPsql(Connection conn) throws SQLException {
         this.conn = conn;
+        rdao = new ReizigerDAOPsql(conn);
     }
 
     @Override
@@ -19,8 +23,8 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
 
         // Gebruik van prepared statement om makkelijk variabelen in de query te doen.
         try(PreparedStatement ps = conn.prepareStatement(saveQuery)) {
-            ps.setInt(1, ovChipkaart.getKaart_nummer());
-            ps.setDate(2, Date.valueOf(ovChipkaart.getGeldig_tot()));
+            ps.setInt(1, ovChipkaart.getKaartNummer());
+            ps.setDate(2, new Date(ovChipkaart.getGeldigTot().getTime()));
             ps.setInt(3, ovChipkaart.getKlasse());
             ps.setFloat(4, ovChipkaart.getSaldo());
             ps.setInt(5, ovChipkaart.getReiziger().getId());
@@ -43,11 +47,11 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
 
         // Variabelen in de query stoppen.
         try(PreparedStatement ps = conn.prepareStatement(updateQuery)) {
-            ps.setDate(1, Date.valueOf(ovChipkaart.getGeldig_tot()));
+            ps.setDate(1, new Date(ovChipkaart.getGeldigTot().getTime()));
             ps.setInt(2, ovChipkaart.getKlasse());
             ps.setFloat(3, ovChipkaart.getSaldo());
             ps.setInt(4, ovChipkaart.getReiziger().getId());
-            ps.setInt(5, ovChipkaart.getKaart_nummer());
+            ps.setInt(5, ovChipkaart.getKaartNummer());
 
         // Prepared statement uitvoeren en closen.
             ps.execute();
@@ -62,15 +66,15 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
 
     @Override
     public boolean delete(OVChipkaart ovChipkaart) throws SQLException {
+        // De OV Chipkaart uit de lijst met chipkaarten van de reiziger halen.
+        ovChipkaart.getReiziger().getOVChipkaarten().remove(ovChipkaart);
+
         // Delete query maken en uitvoeren
         String deleteQuery = "DELETE FROM ov_chipkaart WHERE kaart_nummer = ?";
         try(PreparedStatement ps = conn.prepareStatement(deleteQuery)) {
-            ps.setInt(1, ovChipkaart.getKaart_nummer());
+            ps.setInt(1, ovChipkaart.getKaartNummer());
             ps.execute();
             ps.close();
-
-            // De OV Chipkaart uit de lijst met chipkaarten van de reiziger halen.
-            ovChipkaart.getReiziger().getOVChipkaarten().remove(ovChipkaart);
             return true;
         }catch (SQLException e){
             System.out.println("Error deleting OV Chipkaart");
@@ -89,8 +93,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
             // Het aanmaken van het ovchipkaart object in een if zodat het niet fout gaat als er geen resultaat is.
             if (results.next()){
                 // De database aanroepen om bijbehorende reiziger op te halen en daarna ovchipkaart object aanmaken.
-                ReizigerDAOPsql rdao = new ReizigerDAOPsql(Main.getConnection());
-                OVChipkaart ovChipkaart = new OVChipkaart(id, results.getDate("geldig_tot").toLocalDate(), results.getInt("klasse"), results.getFloat("saldo"),  rdao.findById(results.getInt("reiziger_id")));
+                OVChipkaart ovChipkaart = new OVChipkaart(id, new Date(results.getDate("geldig_tot").getTime()), results.getInt("klasse"), results.getFloat("saldo"),  rdao.findById(results.getInt("reiziger_id")));
                 ps.close();
                 return ovChipkaart;
             }
@@ -114,7 +117,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
             ps.setInt(1, reiziger.getId());
             ResultSet results = ps.executeQuery();
             while(results.next()) {
-                OVChipkaart ovChipkaart = new OVChipkaart(results.getInt("kaart_nummer"), results.getDate("geldig_tot").toLocalDate(), results.getInt("klasse"), results.getFloat("saldo"), reiziger);
+                OVChipkaart ovChipkaart = new OVChipkaart(results.getInt("kaart_nummer"), new Date(results.getDate("geldig_tot").getTime()), results.getInt("klasse"), results.getFloat("saldo"), reiziger);
                 chipkaarten.add(ovChipkaart);
             }
             ps.close();
@@ -135,13 +138,12 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
             ResultSet results = ps.executeQuery();
 
             //Alle reizigers ophalen
-            ReizigerDAOPsql rdao = new ReizigerDAOPsql(Main.getConnection());
             ArrayList<Reiziger> reizigers = rdao.findAll();
             while (results.next()){
                 // Door reizigers zoeken naar de passende reiziger bij de OV chipkaart, op deze manier hoeft er maar 1 keer de database geroepen te worden voor reizigers in plaats van als ik rdao.findById zou doen.
                 for(Reiziger reiziger : reizigers){
                     if(reiziger.getId() == results.getInt("reiziger_id")){
-                        OVChipkaart ovChipkaart = new OVChipkaart(results.getInt("kaart_nummer"), results.getDate("geldig_tot").toLocalDate(), results.getInt("klasse"), results.getFloat("saldo"), reiziger);
+                        OVChipkaart ovChipkaart = new OVChipkaart(results.getInt("kaart_nummer"), new Date(results.getDate("geldig_tot").getTime()), results.getInt("klasse"), results.getFloat("saldo"), reiziger);
                     }
                 }
             }

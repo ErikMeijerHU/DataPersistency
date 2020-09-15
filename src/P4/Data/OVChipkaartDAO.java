@@ -1,7 +1,9 @@
-package P4;
+package P4.Data;
+
+import P4.Domein.OVChipkaart;
+import P4.Domein.Reiziger;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 public interface OVChipkaartDAO {
