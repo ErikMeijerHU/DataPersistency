@@ -93,7 +93,6 @@ public class ProductDAOPsql implements ProductDAO{
 
         // Eerst kijken voor alle chipkaarten van product of de exacte chipkaart al in de database zit.
         for(int ovChipkaartId : product.getOvChipkaarten()){
-            if(!databaseChipkaarten.contains(OVChipkaart.findById(ovChipkaartId))){
                 // Zo niet door alle chipkaarten van de database loopen om te kijken of er een chipkaart is met hetzelfde ID maar andere gegevens.
                 for (OVChipkaart dbChipkaart : databaseChipkaarten){
                     if(dbChipkaart.getKaartNummer() == ovChipkaartId){
@@ -104,9 +103,6 @@ public class ProductDAOPsql implements ProductDAO{
                 }
                 ovdao.save(OVChipkaart.findById(ovChipkaartId));
                 return true;
-            }
-
-            else{return false;}
         }
         return true;
     }

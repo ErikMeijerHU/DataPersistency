@@ -9,7 +9,7 @@ public class OVChipkaart {
     private int klasse;
     private float saldo;
     private Reiziger reiziger;
-    private ArrayList<Integer> productenIds = new ArrayList<>();
+    private ArrayList<Product> producten = new ArrayList<Product>();
 
     public static ArrayList<OVChipkaart> alleOvChipkaarten = new ArrayList<>();
 
@@ -65,32 +65,26 @@ public class OVChipkaart {
         this.reiziger = reiziger;
     }
 
-    public ArrayList<Integer> getProductenIds() {return productenIds;}
+    public ArrayList<Product> getProducten() {return producten;}
 
-    public void setProductenIds(ArrayList<Product> producten) {
-        productenIds.clear();
-        for (Product product : producten){
-            if (!productenIds.contains(product.getProductNummer())){
-                this.productenIds.add(product.getProductNummer());
-            }
-        }
-
+    public void setProducten(ArrayList<Product> producten) {
+        this.producten = producten;
     }
 
-    public void deleteOvChipkaart(OVChipkaart ovChipkaart) {
-        // Chipkaart bij de reiziger eruit halen.
-        ovChipkaart.getReiziger().getOVChipkaarten().remove(ovChipkaart);
-
+    public Boolean deleteOvChipkaart(OVChipkaart ovChipkaart) {
         // Bij alle producten de OV Chipkaart uit de lijst met chipkaarten halen.
         for (Product product : Product.alleProducten) {
             product.getOvChipkaarten().remove(Integer.valueOf(ovChipkaart.kaartNummer));
         }
         // Chipkaart uit de lijst met alle chipkaarten halen.
         alleOvChipkaarten.remove(ovChipkaart);
+
+        // Chipkaart bij de reiziger eruit halen.
+        return ovChipkaart.getReiziger().getOVChipkaarten().remove(ovChipkaart);
     }
 
-    public void addProduct(Product product){
-        this.getProductenIds().add(product.getProductNummer());
+    public Boolean addProduct(Product product){
+        return this.producten.add(product);
     }
 
     public static OVChipkaart findById(int id){
@@ -104,11 +98,12 @@ public class OVChipkaart {
 
     @Override
     public String toString() {
-        return "{" +
-                "Kaart Nummer=" + kaartNummer +
-                ", Geldig Tot=" + geldigTot +
-                ", Klasse=" + klasse +
-                ", Saldo=" + saldo +
-                '}';
+        StringBuilder s = new StringBuilder();
+        s.append("OVChipkaart {" + "Kaart Nummer=").append(kaartNummer).append(", Geldig Tot=").append(geldigTot).append(", Klasse=").append(klasse).append(", Saldo=").append(saldo).append(", Producten = [");
+        for(Product product : producten){
+            s.append("{ID: ").append(product.getProductNummer()).append(", Naam: ").append(product.getNaam()).append(", Beschrijving: ").append(product.getBeschrijving()).append(", Prijs: ").append(product.getPrijs()).append("}");
+        }
+        s.append("]}");
+        return s.toString();
     }
 }

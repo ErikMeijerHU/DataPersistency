@@ -40,18 +40,18 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
         pdao = new ProductDAOPsql(conn);
         ArrayList<Product> databaseProducten = pdao.findAll();
 
-        for(int productId : ovChipkaart.getProductenIds()){
-            if(!databaseProducten.contains(Product.findById(productId))){
-                pdao.save(Product.findById(productId));
+        for(Product product : ovChipkaart.getProducten()){
+            if(!databaseProducten.contains(product)){
+                pdao.save(product);
             }
         }
 
         if(ProductDAOPsql.saved == false) {
             String saveTussenQuery = "insert into ov_chipkaart_product (kaart_nummer, product_nummer) values (?, ?)";
-            for (Integer productId : ovChipkaart.getProductenIds()) {
+            for (Product product : ovChipkaart.getProducten()) {
                 try (PreparedStatement ps = conn.prepareStatement(saveTussenQuery)) {
                     ps.setInt(1, ovChipkaart.getKaartNummer());
-                    ps.setInt(2, productId);
+                    ps.setInt(2, product.getProductNummer());
                     ps.execute();
                     ProductDAOPsql.saved = true;
                     return true;
@@ -91,19 +91,17 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
         pdao = new ProductDAOPsql(conn);
         ArrayList<Product> databaseProducten = pdao.findAll();
 
-        for(int productId : ovChipkaart.getProductenIds()){
-            if(!databaseProducten.contains(Product.findById(productId))){
+        for(Product product : ovChipkaart.getProducten()){
                 for (Product dbProduct : databaseProducten){
-                    if(dbProduct.getProductNummer() == productId){
-                        pdao.update(Product.findById(productId));
+                    if(dbProduct.getProductNummer() == product.getProductNummer()){
+                        pdao.update(product);
                         return true;
                     }
                 }
-                pdao.save(Product.findById(productId));
+                pdao.save(product);
                 return true;
             }
-            else{return false;}
-        }
+
         return true;
     }
 
@@ -188,6 +186,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
 
             //Alle reizigers ophalen
             rdao = new ReizigerDAOPsql(conn);
+            pdao = new ProductDAOPsql(conn);
             ArrayList<Reiziger> reizigers = rdao.findAll();
             while (results.next()){
                 // Door reizigers zoeken naar de passende reiziger bij de OV chipkaart, op deze manier hoeft er maar 1 keer de database geroepen te worden voor reizigers in plaats van als ik rdao.findById zou doen.
@@ -198,7 +197,8 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
                             pps.setInt(1, ovChipkaart.getKaartNummer());
                             ResultSet ovResults = pps.executeQuery();
                             while (ovResults.next()){
-                                ovChipkaart.getProductenIds().add(ovResults.getInt("product_nummer"));
+                                pdao.findAll();
+                                ovChipkaart.getProducten().add(Product.findById(ovResults.getInt("product_nummer")));
                             }
                         }
                         chipkaarten.add(ovChipkaart);
@@ -225,6 +225,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
 
             //Alle reizigers ophalen
             rdao = new ReizigerDAOPsql(conn);
+            pdao = new ProductDAOPsql(conn);
             ArrayList<Reiziger> reizigers = rdao.findAll();
             while (results.next()){
                 // Door reizigers zoeken naar de passende reiziger bij de OV chipkaart, op deze manier hoeft er maar 1 keer de database geroepen te worden voor reizigers in plaats van als ik rdao.findById zou doen.
@@ -235,7 +236,8 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
                             peepis.setInt(1, ovChipkaart.getKaartNummer());
                             ResultSet ovResults = peepis.executeQuery();
                                 while (ovResults.next()) {
-                                    ovChipkaart.getProductenIds().add(ovResults.getInt("product_nummer"));
+                                    pdao.findAll();
+                                    ovChipkaart.getProducten().add(Product.findById(ovResults.getInt("product_nummer")));
                                 }
 
                         }

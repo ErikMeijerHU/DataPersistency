@@ -193,13 +193,13 @@ public class Main {
         System.out.println(nieuwProduct.toString() + "\n" + nieuweChipkaart.toString());
 
         // Verwijder product en zie wat het doet met de bijbehorende chipkaart
-        System.out.print("[Test] Eerst " + alleProducten.size() + " producten en chipkaart 35283 heeft " + nieuweChipkaart.getProductenIds().size() + " gelinkde producten, na delete ");
+        System.out.print("[Test] Eerst " + alleProducten.size() + " producten en chipkaart 35283 heeft " + nieuweChipkaart.getProducten().size() + " gelinkde producten, na delete ");
         pdao.delete(nieuwProduct);
         alleChipkaarten = null;
         alleProducten = null;
         alleProducten = pdao.findAll();
         alleChipkaarten = ovdao.findAll();
-        System.out.print(alleProducten.size() + " producten en de chipkaart heeft " + nieuweChipkaart.getProductenIds().size() + " gelinkde producten.\n");
+        System.out.print(alleProducten.size() + " producten en de chipkaart heeft " + nieuweChipkaart.getProducten().size() + " gelinkde producten.\n");
         ovdao.delete(nieuweChipkaart);
     }
 

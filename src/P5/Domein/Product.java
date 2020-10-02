@@ -68,33 +68,36 @@ public class Product {
         }
     }
 
-    public void addOvChipkaart(OVChipkaart ovChipkaart){
+    public Boolean addOvChipkaart(OVChipkaart ovChipkaart){
         if (!ovChipkaartenIds.contains(ovChipkaart.getKaartNummer())) {
             this.ovChipkaartenIds.add(ovChipkaart.getKaartNummer());
+            return true;
         }
+        return false;
     }
 
-    public void deleteProduct(Product product) {
+    public Boolean deleteProduct(Product product) {
         for (OVChipkaart ovChipkaart : OVChipkaart.alleOvChipkaarten) {
-            if (ovChipkaart.getProductenIds().contains(product.productNummer)) {
-                ovChipkaart.getProductenIds().remove(Integer.valueOf(product.productNummer));
+            if (ovChipkaart.getProducten().contains(product)) {
+                ovChipkaart.getProducten().remove(product);
             }
         }
-        alleProducten.remove(product);
+        return alleProducten.remove(product);
     }
 
     @Override
     public String toString() {
-        return "Product{" +
-                "Nummer = " + productNummer +
-                ", Naam = '" + naam + '\'' +
-                ", Beschrijving = '" + beschrijving + '\'' +
-                ", Prijs = " + prijs +
-                ", Kaart nummers = " + ovChipkaartenIds +
-                "}";
+        StringBuilder s = new StringBuilder();
+        s.append("Product{" + "Nummer = ").append(productNummer).append(", Naam = '").append(naam).append('\'').append(", Beschrijving = '").append(beschrijving).append('\'').append(", Prijs = ").append(prijs).append(", Chipkaarten = [");
+        for (int i : ovChipkaartenIds){
+            OVChipkaart chipkaart = OVChipkaart.findById(i);
+            s.append("{ID: " + chipkaart.getKaartNummer() + ", Geldig Tot: " + chipkaart.getGeldigTot() + ", Saldo: " + chipkaart.getSaldo() + ", Klasse: " + chipkaart.getKlasse() + "}");
+        }
+        s.append("]}");
+        return s.toString();
     }
 
-    public static Product findById(Integer id) {
+    public static Product findById(int id) {
         for(Product product : alleProducten){
             if(product.getProductNummer() == id){
                 return product;
