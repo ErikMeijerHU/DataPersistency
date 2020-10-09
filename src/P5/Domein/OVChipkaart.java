@@ -71,10 +71,10 @@ public class OVChipkaart {
         this.producten = producten;
     }
 
-    public Boolean deleteOvChipkaart(OVChipkaart ovChipkaart) {
+    public boolean deleteOvChipkaart(OVChipkaart ovChipkaart) {
         // Bij alle producten de OV Chipkaart uit de lijst met chipkaarten halen.
         for (Product product : Product.alleProducten) {
-            product.getOvChipkaarten().remove(Integer.valueOf(ovChipkaart.kaartNummer));
+            product.removeOvChipkaart(ovChipkaart);
         }
         // Chipkaart uit de lijst met alle chipkaarten halen.
         alleOvChipkaarten.remove(ovChipkaart);
@@ -83,9 +83,11 @@ public class OVChipkaart {
         return ovChipkaart.getReiziger().getOVChipkaarten().remove(ovChipkaart);
     }
 
-    public Boolean addProduct(Product product){
+    public boolean addProduct(Product product){
         return this.producten.add(product);
     }
+
+    public boolean removeProduct(Product product){return this.producten.remove(product);}
 
     public static OVChipkaart findById(int id){
         for(OVChipkaart ovChipkaart : alleOvChipkaarten){

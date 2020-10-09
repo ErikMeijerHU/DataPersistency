@@ -90,19 +90,12 @@ public class ProductDAOPsql implements ProductDAO{
         }
         ovdao = new OVChipkaartDAOPsql(conn);
         ArrayList<OVChipkaart> databaseChipkaarten = ovdao.findAll();
-
+        // #TODO delete and add
         // Eerst kijken voor alle chipkaarten van product of de exacte chipkaart al in de database zit.
         for(int ovChipkaartId : product.getOvChipkaarten()){
-                // Zo niet door alle chipkaarten van de database loopen om te kijken of er een chipkaart is met hetzelfde ID maar andere gegevens.
-                for (OVChipkaart dbChipkaart : databaseChipkaarten){
-                    if(dbChipkaart.getKaartNummer() == ovChipkaartId){
-                        // Als er al een chipkaart met hetzelfde ID bestaat doe update, anders doe save.
-                        ovdao.update(OVChipkaart.findById(ovChipkaartId));
-                        return true;
-                    }
-                }
-                ovdao.save(OVChipkaart.findById(ovChipkaartId));
-                return true;
+            OVChipkaart ovChipkaart = OVChipkaart.findById(ovChipkaartId);
+            ovdao.delete(ovChipkaart);
+            ovdao.save(ovChipkaart);
         }
         return true;
     }

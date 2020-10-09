@@ -92,15 +92,9 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
         ArrayList<Product> databaseProducten = pdao.findAll();
 
         for(Product product : ovChipkaart.getProducten()){
-                for (Product dbProduct : databaseProducten){
-                    if(dbProduct.getProductNummer() == product.getProductNummer()){
-                        pdao.update(product);
-                        return true;
-                    }
-                }
+                pdao.delete(product);
                 pdao.save(product);
-                return true;
-            }
+        }
 
         return true;
     }

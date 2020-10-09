@@ -68,7 +68,7 @@ public class Product {
         }
     }
 
-    public Boolean addOvChipkaart(OVChipkaart ovChipkaart){
+    public boolean addOvChipkaart(OVChipkaart ovChipkaart){
         if (!ovChipkaartenIds.contains(ovChipkaart.getKaartNummer())) {
             this.ovChipkaartenIds.add(ovChipkaart.getKaartNummer());
             return true;
@@ -76,10 +76,14 @@ public class Product {
         return false;
     }
 
-    public Boolean deleteProduct(Product product) {
+    public boolean removeOvChipkaart(OVChipkaart ovChipkaart){
+        return this.ovChipkaartenIds.remove(Integer.valueOf(ovChipkaart.getKaartNummer()));
+    }
+
+    public boolean deleteProduct(Product product) {
         for (OVChipkaart ovChipkaart : OVChipkaart.alleOvChipkaarten) {
             if (ovChipkaart.getProducten().contains(product)) {
-                ovChipkaart.getProducten().remove(product);
+                ovChipkaart.removeProduct(product);
             }
         }
         return alleProducten.remove(product);

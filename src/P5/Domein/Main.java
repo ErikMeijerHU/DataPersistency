@@ -185,11 +185,12 @@ public class Main {
         System.out.println("[Test] Alle producten zoeken bij chipkaart 35283 zou drie resultaten moeten geven:");
         System.out.println("       Aantal resultaten: " + pdao.findByOvChipkaart(ovdao.findById(35283)).size());
 
-        // Aanpassing doen aan de nieuwe chipkaart en product, daarna updaten via pdao.
+        // Aanpassing doen aan de nieuwe chipkaart en product, daarna updaten.
         System.out.println("[Test] ToString van product 77 geeft nu:\n" + nieuwProduct.toString() + "\nEn de ToString van chipkaart 39687 geeft:\n" + nieuweChipkaart.toString()+"\nNa update:");
         nieuwProduct.setPrijs((float) 49.99);
         nieuweChipkaart.setSaldo(20000);
         pdao.update(nieuwProduct);
+        ovdao.update(nieuweChipkaart);
         System.out.println(nieuwProduct.toString() + "\n" + nieuweChipkaart.toString());
 
         // Verwijder product en zie wat het doet met de bijbehorende chipkaart
